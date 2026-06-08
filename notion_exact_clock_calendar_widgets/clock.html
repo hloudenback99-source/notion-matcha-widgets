@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Notion Matcha Clock</title>
+<style>
+
+:root{
+  --card:#EFF5EE;
+  --line:#789786;
+  --text:#668B78;
+  --text-dark:#557963;
+  --soft:#dfe9df;
+}
+*{box-sizing:border-box}
+html,body{
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  background:transparent;
+  overflow:hidden;
+}
+body{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:geometricPrecision;
+}
+.widget-card{
+  width:100vw;
+  height:100vh;
+  background:var(--card);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.clock-stack{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  transform:translateY(2px);
+}
+#time{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-weight:300;
+  letter-spacing:-1.8px;
+  color:#6f9480;
+  font-size:clamp(42px, 11.1vw, 60px);
+  line-height:1;
+  text-align:center;
+}
+#day{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  font-weight:600;
+  color:#79a18c;
+  font-size:clamp(16px, 4.05vw, 24px);
+  line-height:1;
+  margin-top:22px;
+  text-align:center;
+}
+</style>
+</head>
+<body>
+  <main class="widget-card" aria-label="Live clock widget">
+    <section class="clock-stack">
+      <div id="time">5:22:40 PM</div>
+      <div id="day">Saturday</div>
+    </section>
+  </main>
+
+<script>
+(function(){
+  const params = new URLSearchParams(location.search);
+  const fixed = params.get("fixed"); // optional ISO timestamp. Use only if you want the exact screenshot frozen.
+  const tz = params.get("tz") || undefined;
+  const twentyFourHour = params.get("format") === "24";
+  const timeEl = document.getElementById("time");
+  const dayEl = document.getElementById("day");
+
+  function getDate(){
+    return fixed ? new Date(fixed) : new Date();
+  }
+
+  function render(){
+    const now = getDate();
+    const time = new Intl.DateTimeFormat("en-US", {
+      hour:"numeric",
+      minute:"2-digit",
+      second:"2-digit",
+      hour12:!twentyFourHour,
+      timeZone:tz
+    }).format(now);
+
+    const day = new Intl.DateTimeFormat("en-US", {
+      weekday:"long",
+      timeZone:tz
+    }).format(now);
+
+    timeEl.textContent = time;
+    dayEl.textContent = day;
+  }
+
+  render();
+  if(!fixed) setInterval(render, 1000);
+})();
+</script>
+</body>
+</html>
